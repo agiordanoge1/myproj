@@ -167,7 +167,8 @@ void menu(int item)
 		}
 	case MENU_SIMPLIFY:
 		{
-			m->simplifaction(2.0f);
+			m->simplifaction();
+			makeBuffers(m);
 			break;
 		}
 	}
@@ -381,7 +382,7 @@ void initMesh()
 	closest_face = NULL;
 
 	m = new myMesh();
-	if (m->readFile("dolphin.obj")) {
+	if (m->readFile("cube.obj")) {
 		m->computeNormals();
 		makeBuffers(m);
 	}

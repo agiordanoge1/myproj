@@ -20,7 +20,7 @@ public:
 	myPoint3D calcul_centre(myFace* face);
 
 	void subdivisionCatmullClark();
-	void simplifaction(float taille_edge);
+	void simplifaction();
 	float calcul_longueur(myHalfedge *edge);
 	myPoint3D* findmiddle(myHalfedge* edge);
 

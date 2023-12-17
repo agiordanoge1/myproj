@@ -20,29 +20,51 @@ void myVertex::computeNormal()
 	/**** TODO ****/
 	if (originof != NULL)
 	{
-		originof->adjacent_face->computeNormal();
-		originof->twin->adjacent_face->computeNormal();
-		originof->prev->adjacent_face->computeNormal();
+		myVector3D Somme_n(0.0, 0.0, 0.0);
+		myHalfedge* first_he = this->originof;
+		myHalfedge* next_he = first_he;
+		int count=0;
 
-		myVector3D* v1 = originof->adjacent_face->normal;
-		myVector3D* v2 = originof->twin->adjacent_face->normal;
-		myVector3D* v3 = originof->prev->adjacent_face->normal;
 
-		double normal_x = (v1->dX + v2->dX + v3->dX) / 3;
-		double normal_y = (v1->dY + v2->dY + v3->dY) / 3;
-		double normal_z = (v1->dZ + v2->dY + v3->dZ) / 3;;
-
-		double normalize = sqrt(pow(normal_x, 2) + pow(normal_y, 2) + pow(normal_z, 2));
-
-		normal_x /= normalize;
-		normal_y /= normalize;
-		normal_z /= normalize;
-
-		if (normal)
+		do
 		{
-			delete normal;
-		}
-		normal = new myVector3D(normal_x, normal_y, normal_z);
+			Somme_n += *next_he->adjacent_face->normal;
+			count++;
+			next_he = next_he->twin->next;
+
+		} while (first_he != next_he);
+
+
+		if (count == 0)return;
+
+		Somme_n = Somme_n / static_cast<float>(count);
+		Somme_n.normalize();
+		*this->normal = Somme_n;
+		//originof->adjacent_face->computeNormal();
+		//originof->twin->adjacent_face->computeNormal();
+		//originof->prev->twin->adjacent_face->computeNormal();
+
+		//myVector3D* v1 = originof->adjacent_face->normal;
+		//myVector3D* v2 = originof->twin->adjacent_face->normal;
+		//myVector3D* v3 = originof->prev->twin->adjacent_face->normal;
+
+		//double normal_x = (v1->dX + v2->dX + v3->dX) / 3;
+		//double normal_y = (v1->dY + v2->dY + v3->dY) / 3;
+		//double normal_z = (v1->dZ + v2->dZ + v3->dZ) / 3;
+
+		//double normalize = sqrt(pow(normal_x, 2) + pow(normal_y, 2) + pow(normal_z, 2));
+		//if (normalize != 0)
+		//{
+		//	normal_x /= normalize;
+		//	normal_y /= normalize;
+		//	normal_z /= normalize;
+		//}
+
+		//if (normal)
+		//{
+		//	delete normal;
+		//}
+		/*normal = new myVector3D(normal_x, normal_y, normal_z);*/
 	}
 	else return;
 }

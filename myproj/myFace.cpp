@@ -22,7 +22,7 @@ void myFace::computeNormal()
 	{
 		myVertex* first_v = adjacent_halfedge->source;
 		myVertex* second_v = adjacent_halfedge->next->source;
-		myVertex* third_v = adjacent_halfedge->next->next->source;
+		myVertex* third_v = adjacent_halfedge->prev->source;
 
 		myVector3D first_vec = *(second_v->point) - *(first_v->point);
 		myVector3D second_vec = *(third_v->point) - *(first_v->point);
@@ -32,16 +32,23 @@ void myFace::computeNormal()
 		double normal_z = (first_vec.dX) * (second_vec.dY) - (first_vec.dY) * (second_vec.dX);
 
 		double normalize = sqrt(pow(normal_x, 2) + pow(normal_y, 2) + pow(normal_z, 2));
-
-		normal_x /= normalize;
-		normal_y /= normalize;
-		normal_z /= normalize;
+		if (normalize != 0)
+		{
+			normal_x /= normalize;
+			normal_y /= normalize;
+			normal_z /= normalize;
+		}
 
 		if (normal)
 		{
 			delete normal;
 		}
-		normal = new myVector3D(normal_x, normal_y, normal_z);
+		this->normal= new myVector3D(normal_x, normal_y, normal_z);
+
+		//myVector3D normal_r = first_vec.crossproduct(second_vec);
+		//normal_r.normalize();
+
+		//*(this->normal) = normal_r;
 
 	}
 	else return;
