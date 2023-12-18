@@ -50,6 +50,9 @@ void myMesh::checkMesh()
 
 bool myMesh::readFile(std::string filename)
 {
+	/*
+	Qiao Qiao's code
+	*/
 	string s, t, u;
 	vector<int> faceids;
 	myHalfedge** hedges;
@@ -156,6 +159,136 @@ bool myMesh::readFile(std::string filename)
 		//cout << "nb: " << nbVerInFace << endl;
 		//nbVerInFace = 0;
 	}
+	/*
+	end of Qiao Qiao's code
+	*/
+
+	/*
+	my old code
+	*/
+	/*
+	string s, t, u;
+
+	ifstream fin(filename);
+	if (!fin.is_open()) {
+		cout << "Unable to open file!\n";
+		return false;
+	}
+	name = filename;
+
+	map<pair<int, int>, myHalfedge*> twin_map;
+	map<pair<int, int>, myHalfedge*>::iterator it;
+
+	// Temporary vector to store faces vertices ids.
+	vector<vector<int>> obj_faces;
+
+	while (getline(fin, s))
+	{
+		stringstream myline(s);
+		myline >> t;
+		if (t == "g") {}
+		else if (t == "v")
+		{
+			float x, y, z;
+			myline >> x >> y >> z;
+			cout << "v " << x << " " << y << " " << z << endl;
+
+			// Registering the vertex.
+			auto* v = new myVertex();
+			v->point = new myPoint3D(x, y, z);
+			vertices.push_back(v);
+		}
+		else if (t == "mtllib") {}
+		else if (t == "usemtl") {}
+		else if (t == "s") {}
+		else if (t == "f")
+		{
+			cout << "f";
+
+			// Reading the current face's vertices.
+			vector<int> face_ids;
+			while (myline >> u)
+			{
+				int vertex = atoi((u.substr(0, u.find("/"))).c_str());
+				cout << " " << vertex;
+
+				face_ids.push_back(vertex);
+			}
+			// Storing the new face as a series of vertices ids.
+			obj_faces.push_back(face_ids);
+
+			cout << endl;
+		}
+	}
+
+	// Rebuilding each face from its vertices.
+	for (const vector<int>& face_ids : obj_faces)
+	{
+		auto* new_face = new myFace();
+
+		// Temporary vector for the face's half-edges
+		vector<myHalfedge*> face_hedges;
+
+		// Registering the new face.
+		faces.push_back(new_face);
+
+		// Building the face's half-edges.
+		int n = static_cast<int>(face_ids.size());
+		for (int i = 0; i < n; i++)
+		{
+			// Building an edge from vertices indexes.
+			int idx1 = face_ids[i];
+			int idx2 = i < n ? face_ids[(i-1 + face_ids.size())% face_ids.size()] : face_ids[0];
+
+			// Creating the new half-edge.
+			auto* new_h_edge = new myHalfedge();
+			new_h_edge->adjacent_face = new_face;
+
+			// Retrieving the corresponding vertex and linking the half-edge with it.
+			vertices.at(idx1 - 1)->originof = new_h_edge;
+			new_h_edge->source = vertices.at(idx1 - 1);
+
+			// Try to retrieve the current half-edge's twin.
+			it = twin_map.find(make_pair(idx2, idx1));
+			if (it == twin_map.end())
+			{
+				// This means there was no myHalfedge* present at location(a, b).
+				// Then we create an entry in the twin mapping.
+				twin_map.insert(pair<pair<int, int>, myHalfedge*>(make_pair(idx1, idx2), new_h_edge));
+			}
+			else
+			{
+				// It was found. The variable it->second is of type myHalfedge*,
+				// and is the half-edge present at location(a, b).
+				new_h_edge->twin = it->second;
+				it->second->twin = new_h_edge;
+			}
+
+			// Registering the half-edge.
+			halfedges.push_back(new_h_edge);
+			face_hedges.push_back(new_h_edge);
+		}
+
+		// Linking the half-edges together.
+		int he_count = static_cast<int>(face_hedges.size());
+		for (int i = 0; i < he_count; ++i) {
+			face_hedges[i]->next = face_hedges[(i + 1) % he_count];
+			face_hedges[i]->prev = face_hedges[(i + he_count - 1) % he_count];
+		}
+
+		// Link the new face to a corresponding half-edge
+		new_face->adjacent_halfedge = halfedges.back();
+
+	}
+
+	// Clear the temporary vector
+	obj_faces.clear();
+
+	*/
+	/*
+	end of my old code
+	*/
+
 	checkMesh();
 	normalize();
 
@@ -287,10 +420,10 @@ void myMesh::simplifaction()
 
 
 	cout << "ici" << endl;
-	//halfedges[min_index]->next->prev = halfedges[min_index]->prev;
+	halfedges[min_index]->next->prev = halfedges[min_index]->prev;
 	halfedges[min_index]->prev->next = halfedges[min_index]->next;
 	halfedges[min_index]->prev->twin->prev = halfedges[min_index]->next->twin;
-	halfedges[min_index]->next->twin->next = halfedges[min_index]->prev->twin;//problème 
+	//halfedges[min_index]->next->twin->next = halfedges[min_index]->prev->twin;//problème 
 
 	
 	if (halfedges[min_index]->source->originof == halfedges[min_index])
@@ -507,6 +640,11 @@ bool myMesh::checksourceinv_he(vector<myMesh*> mesh)
 
 bool myMesh::checknextprev(vector<myHalfedge*> halfedges)
 {
+	for (myHalfedge* halfedge : halfedges)
+	{
+		if (halfedge->prev != halfedge->next) throw runtime_error("check twin next he error");
+		if (halfedge->next->twin != halfedge->twin->prev) throw runtime_error("check twin prev he error");
+	}
 	return true;
 }
 
@@ -536,7 +674,7 @@ bool myMesh::checkadjacenthalfedges()
 	return true;
 }
 
-bool myMesh::checknul()
+bool myMesh::checknull()
 {
 	return true;
 }

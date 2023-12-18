@@ -46,7 +46,7 @@ public:
 
 
 	bool checkadjacenthalfedges();
-	bool checknul();
+	bool checknull();
 	bool allhalfedge();
 
 

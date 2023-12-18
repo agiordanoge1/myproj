@@ -45,11 +45,6 @@ void myFace::computeNormal()
 		}
 		this->normal= new myVector3D(normal_x, normal_y, normal_z);
 
-		//myVector3D normal_r = first_vec.crossproduct(second_vec);
-		//normal_r.normalize();
-
-		//*(this->normal) = normal_r;
-
 	}
 	else return;
 }
